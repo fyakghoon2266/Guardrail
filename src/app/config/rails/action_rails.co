@@ -1,0 +1,20 @@
+define bot inform cannot about input
+  "999"
+
+define bot inform cannot about output
+  "998"
+
+define flow check blocked terms input
+  $is_blocked = execute check_blocked_terms_input
+
+  if $is_blocked
+    bot inform cannot about input
+    abort
+
+
+define flow check blocked terms output
+  $is_blocked = execute check_blocked_terms_input
+
+  if $is_blocked
+    bot inform cannot about output
+    abort
