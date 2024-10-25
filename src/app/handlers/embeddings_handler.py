@@ -12,7 +12,7 @@ from app.handlers.untils import process_input
 from app.handlers.keyword_blocker import check_and_block_keywords, chat_block_response
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-logging.getLogger("nemo_logger").setLevel(logging.ERROR)
+logging.getLogger("nemoguardrails").setLevel(logging.ERROR)
 
 
 class RequestHandler:
@@ -38,16 +38,16 @@ class EmbeddingsRequestHandler(RequestHandler):
 
         logging.info(f'process input : {process_input(body_json)}')
 
-        block_result_input = await check_and_block_keywords(process_input(body_json), rails_rule, mode='embedding')
+        # block_result_input = await check_and_block_keywords(process_input(body_json), rails_rule, mode='embedding')
 
-        if block_result_input==400:
-            logging.exception("An error occurred")
-            return JSONResponse(content={"error": "很抱歉，您的資料中有觸犯到護欄關鍵字規則，因此被阻擋"}, status_code=504)
+        # if block_result_input==400:
+        #     logging.exception("An error occurred")
+        #     return JSONResponse(content={"error": "很抱歉，您的資料中有觸犯到護欄關鍵字規則，因此被阻擋"}, status_code=504)
         
-        elif block_result_input==401:
+        # elif block_result_input==401:
 
-            logging.exception("An error occurred")
-            return JSONResponse(content={"error": "很抱歉，您的資料中有觸犯到護欄內容規則，因此被阻擋"}, status_code=504)
+        #     logging.exception("An error occurred")
+        #     return JSONResponse(content={"error": "很抱歉，您的資料中有觸犯到護欄內容規則，因此被阻擋"}, status_code=504)
 
 
         headers = {

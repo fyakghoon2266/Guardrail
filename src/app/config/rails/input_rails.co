@@ -1,5 +1,5 @@
 define bot refuse to respond input
-  "999"
+  "997"
 
 define flow self check input
   $allowed = execute self_check_input
@@ -7,4 +7,5 @@ define flow self check input
   if not $allowed
     bot refuse to respond input
     stop
+
 

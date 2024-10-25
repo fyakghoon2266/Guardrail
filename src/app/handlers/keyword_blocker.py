@@ -15,26 +15,18 @@ from app.handlers.untils import block_chat_stream
 
 async def check_and_block_keywords(data: Any, rails: Any, mode: Any) -> Dict[str, Any]:
 
-    await rails.generate_async(prompt=data, options={"mode": mode, "rails": ["input"]})
-    info = rails.explain()
+    response = await rails.generate_async(prompt=data, options={"mode": mode, "rails": ["input"]})
 
-    # 檢查 info.llm_calls 是否存在且不為空
-    if hasattr(info, 'llm_calls') and info.llm_calls:
-        # 安全地訪問 info.llm_calls[0].completion
-        if 'Yes' in info.llm_calls[0].completion.splitlines()[0]:
-            
-            return 401
-
-        elif str(info.colang_history.splitlines()[1].strip().strip('"')) == '999':
-            
-            return 400
-    
-    # 如果 info.llm_calls 不存在或為空，檢查下一個條件
-    elif str(info.colang_history.splitlines()[1].strip().strip('"')) == '999':
+    if response.response == '999':
 
         return 400
 
-    return None
+    elif response.response == '997':
+
+        return 401
+
+    else:
+        return None
 
 async def chat_block_response(request: Request, reason: str) -> Any:
     logging.info(f'Forwarding request to: OpenAI')

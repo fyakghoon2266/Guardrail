@@ -11,9 +11,9 @@ models:
       temperature: 0
 
 
-  - type: embeddings
-    engine: FastEmbed
-    model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  # - type: embeddings
+  #   engine: FastEmbed
+  #   model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
     
 
 rails:
