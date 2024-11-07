@@ -11,9 +11,9 @@ models:
       temperature: 0
 
 
-  - type: embeddings
-    engine: FastEmbed
-    model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  # - type: embeddings
+  #   engine: FastEmbed
+  #   model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
     
 
 rails:
@@ -21,12 +21,6 @@ rails:
     flows:
       - check blocked terms input
       - self check input
-  
-  output:
-    flows:
-      - check blocked terms output
-      - self check output
-
 
 instructions:
   - type: general

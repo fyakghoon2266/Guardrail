@@ -49,8 +49,13 @@ class ChatCompletionsRequestHandler(RequestHandler):
 
         logging.info(f'User Massage : {last_message}')
 
-        block_result_input = await check_and_block_keywords(last_message, rails_rule, mode='chat')
+        if last_message == None:
+            block_result_input = None
 
+        else:
+            block_result_input = await check_and_block_keywords(last_message, rails_rule, mode='chat')
+
+        logging.info(f'block result input : {block_result_input}')
         if block_result_input==400:
             if body_json['stream'] == True:
                 body = await chat_stream_input_block_response(last_message, request, reason=settings.stream_input_keyword_block_message)
@@ -84,22 +89,25 @@ class ChatCompletionsRequestHandler(RequestHandler):
             forwarded_response = await client.request(method, url, content=body, headers=headers)
 
 
-        azure_response = Response(
-            content=forwarded_response.content,
-            status_code=forwarded_response.status_code,
-            headers=dict(forwarded_response.headers),
-            media_type=forwarded_response.headers.get("Content-Type")
-        )
+            azure_response = Response(
+                content=forwarded_response.content,
+                status_code=forwarded_response.status_code,
+                headers=dict(forwarded_response.headers),
+                media_type=forwarded_response.headers.get("Content-Type")
+            )
 
         if process_response_content(azure_response.body.decode('utf-8'))==True:
 
             response_content_str = azure_response.body.decode('utf-8')
 
             if block_result_input == 400:
+                
                 block_response = await chat_stream_output_block_response(forwarded_response, reason=settings.stream_input_keyword_block_message)
 
                 return block_response
+
             elif block_result_input == 401:
+
                 block_response = await chat_stream_output_block_response(forwarded_response, reason=settings.stream_input_content_block_message)
 
                 return block_response
@@ -108,14 +116,23 @@ class ChatCompletionsRequestHandler(RequestHandler):
 
                 logging.info(f'chat output message : {accumulate_streamed_content(response_content_str)}')
 
-                block_result_ouput = await check_and_block_keywords(str(accumulate_streamed_content(response_content_str)), rails_rule, mode='chat')
+                if accumulate_streamed_content(response_content_str) == None:
 
-            else: 
+                    block_result_ouput = None
+                else: 
+                    block_result_ouput = await check_and_block_keywords(str(accumulate_streamed_content(response_content_str)), rails_rule, mode='chat')
+                
+            else:
 
-                logging.info(f"chat output message : {json.loads(response_content_str)['choices'][0]['message']['content']}")
+                no_stream_response = json.loads(response_content_str)['choices'][0]['message']['content'] 
 
-                block_result_ouput = await check_and_block_keywords(json.loads(response_content_str)['choices'][0]['message']['content'], rails_rule, mode='chat')
-
+                logging.info(f"chat output message : {no_stream_response}")
+                if no_stream_response == None:
+                    block_result_ouput = None
+                else:
+                    block_result_ouput = await check_and_block_keywords(no_stream_response, rails_rule, mode='chat')
+                    
+            logging.info(f'block result output : {block_result_ouput}')
             if block_result_ouput==400:
                 if body_json['stream'] == True:
                     block_response = await chat_stream_output_block_response(forwarded_response, reason=settings.stream_output_keyword_block_message)

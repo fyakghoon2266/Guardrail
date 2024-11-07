@@ -17,6 +17,8 @@ async def check_and_block_keywords(data: Any, rails: Any, mode: Any) -> Dict[str
 
     response = await rails.generate_async(prompt=data, options={"mode": mode, "rails": ["input"]})
 
+    print('response : ', response)
+
     if response.response == '999':
 
         return 400

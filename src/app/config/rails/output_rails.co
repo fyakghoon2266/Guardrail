@@ -1,8 +1,8 @@
 define bot refuse to respond output
-  "998"
+  "997"
 
 define flow self check output
-  $allowed = execute self_check_input
+  $allowed = execute self_check_output
 
   if not $allowed
     bot refuse to respond output

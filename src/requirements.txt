@@ -11,3 +11,4 @@ pydantic==2.8.2
 pydantic-settings==2.4.0
 pandas==2.2.2
 openpyxl==3.1.5
+langchain-google-vertexai==0.0.7
