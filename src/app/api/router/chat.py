@@ -9,7 +9,7 @@ from starlette.responses import JSONResponse
 from app.handlers.request_handler_factory import RequestHandlerFactory
 from app.handlers.verify_token import verify_token
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(asctime)s - %(message)s')
 logging.getLogger("nemoguardrails").setLevel(logging.ERROR)
 
 chat_router = APIRouter()

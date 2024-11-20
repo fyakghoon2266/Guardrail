@@ -11,7 +11,7 @@ from starlette.responses import JSONResponse, Response
 from app.handlers.untils import process_input
 from app.handlers.keyword_blocker import check_and_block_keywords, chat_block_response
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(asctime)s - %(message)s')
 logging.getLogger("nemoguardrails").setLevel(logging.ERROR)
 
 
@@ -38,7 +38,7 @@ class EmbeddingsRequestHandler(RequestHandler):
 
         logging.info(f'process input : {process_input(body_json)}')
 
-        # block_result_input = await check_and_block_keywords(process_input(body_json), rails_rule, mode='embedding')
+        # block_result_input = await check_and_block_keywords(process_input(body_json), rails_rule, mode='embedding', rails_type='input')
 
         # if block_result_input==400:
         #     logging.exception("An error occurred")

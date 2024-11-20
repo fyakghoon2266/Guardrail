@@ -6,8 +6,8 @@ models:
     model: gpt-4
     parameters:
       azure_endpoint: https://cub-openai-poc-digi2.openai.azure.com
-      api_version: 2024-02-15-preview
-      deployment_name: dataeco-gpt-35-turbo-0613
+      api_version: 2024-05-01-preview
+      deployment_name: dataeco-gpt-4o-2024-05-13
       temperature: 0
 
 
@@ -17,6 +17,11 @@ models:
     
 
 rails:
+  input_keyword:
+    flows:
+      - check blocked terms input
+      # - self check input
+  
   input:
     flows:
       - check blocked terms input

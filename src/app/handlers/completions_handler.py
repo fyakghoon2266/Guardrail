@@ -11,7 +11,7 @@ from starlette.responses import Response
 from app.handlers.keyword_blocker import check_and_block_keywords, completions_block_response
 from app.config.settings import settings
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(asctime)s - %(message)s')
 logging.getLogger("nemoguardrails").setLevel(logging.ERROR)
 
 class RequestHandler:
@@ -39,7 +39,7 @@ class CompletionsRequestHandler(RequestHandler):
 
         logging.info('completion input message : {last_message}')
         
-        block_result = await check_and_block_keywords(last_message, rails, mode='completion')
+        block_result = await check_and_block_keywords(last_message, rails, mode='completion', rails_type='input')
 
         if block_result==400:
             block_response = await completions_block_response(request, reason=settings.input_keyword_block_message)
@@ -80,7 +80,7 @@ class CompletionsRequestHandler(RequestHandler):
 
         logging.info(f"completions output : {response_json['choices'][0]['text']}")
 
-        block_result = await check_and_block_keywords(response_json["choices"][0]["text"], rails, mode='completion')
+        block_result = await check_and_block_keywords(response_json["choices"][0]["text"], rails, mode='completion', rails_type='output')
         
         if block_result==400:
             block_response = await completions_block_response(request, reason=settings.output_keyword_block_message)

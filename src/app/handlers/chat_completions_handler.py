@@ -4,7 +4,7 @@ import sys
 from typing import Any, Dict
 import httpx
 import json
-
+import time
 
 from fastapi import Request
 from starlette.responses import Response
@@ -13,7 +13,7 @@ from app.handlers.keyword_blocker import check_and_block_keywords, chat_block_re
 from app.handlers.untils import accumulate_streamed_content, process_response_content, get_last_user_content
 from app.config.settings import settings
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(asctime)s - %(message)s')
 logging.getLogger("nemoguardrails").setLevel(logging.ERROR)
 
 class RequestHandler:
@@ -53,7 +53,7 @@ class ChatCompletionsRequestHandler(RequestHandler):
             block_result_input = None
 
         else:
-            block_result_input = await check_and_block_keywords(last_message, rails_rule, mode='chat')
+            block_result_input = await check_and_block_keywords(last_message, rails_rule, mode='chat', rails_type='input_keyword')
 
         logging.info(f'block result input : {block_result_input}')
         if block_result_input==400:
@@ -80,14 +80,24 @@ class ChatCompletionsRequestHandler(RequestHandler):
         headers['host'] = os.getenv("AZURE_HOST")
         headers['api-key'] = os.getenv("AZURE_OPENAI_API_KEY")
         headers['content-length'] = str(len(body))
+        headers["Accept-Encoding"] = "gzip, deflate"
         
         # Replace url
         url = url.replace(f'{os.getenv("BASE_URL")}', f'{os.getenv("AZURE_ENDPOINT")}')
 
-        # 使用 httpx 發送請求
-        async with httpx.AsyncClient(timeout=None) as client:
-            forwarded_response = await client.request(method, url, content=body, headers=headers)
+        logging.info(f"start to httpx requset")
 
+        # 使用 httpx 發送請求
+        start_time = time.perf_counter()
+        async with httpx.AsyncClient(http2=True, timeout=None, limits=httpx.Limits(max_keepalive_connections=5)) as client:
+            connect_start = time.perf_counter()
+            forwarded_response = await client.request(method, url, content=body, headers=headers)
+            connect_end = time.perf_counter()
+
+            logging.info(f"Request connect time: {connect_end - connect_start:.4f} seconds")
+
+            end_time = time.perf_counter()
+            logging.info(f"httpx request completed in {end_time - start_time:.2f} seconds")
 
             azure_response = Response(
                 content=forwarded_response.content,
@@ -120,7 +130,7 @@ class ChatCompletionsRequestHandler(RequestHandler):
 
                     block_result_ouput = None
                 else: 
-                    block_result_ouput = await check_and_block_keywords(str(accumulate_streamed_content(response_content_str)), rails_rule, mode='chat')
+                    block_result_ouput = await check_and_block_keywords(str(accumulate_streamed_content(response_content_str)), rails_rule, mode='chat', rails_type='input')
                 
             else:
 
@@ -130,7 +140,7 @@ class ChatCompletionsRequestHandler(RequestHandler):
                 if no_stream_response == None:
                     block_result_ouput = None
                 else:
-                    block_result_ouput = await check_and_block_keywords(no_stream_response, rails_rule, mode='chat')
+                    block_result_ouput = await check_and_block_keywords(no_stream_response, rails_rule, mode='chat', rails_type='input')
                     
             logging.info(f'block result output : {block_result_ouput}')
             if block_result_ouput==400:

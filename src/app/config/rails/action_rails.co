@@ -2,7 +2,7 @@ define bot inform cannot about input
   "999"
 
 define bot inform cannot about output
-  "998"
+  "999"
 
 define flow check blocked terms input
   $is_blocked = execute check_blocked_terms_input

@@ -13,11 +13,9 @@ from app.handlers.untils import block_chat_stream
 
 
 
-async def check_and_block_keywords(data: Any, rails: Any, mode: Any) -> Dict[str, Any]:
+async def check_and_block_keywords(data: Any, rails: Any, mode: Any, rails_type: str) -> Dict[str, Any]:
 
-    response = await rails.generate_async(prompt=data, options={"mode": mode, "rails": ["input"]})
-
-    print('response : ', response)
+    response = await rails.generate_async(prompt=data, options={"mode": mode, "rails": [rails_type], "role": "assistant"})
 
     if response.response == '999':
 

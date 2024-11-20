@@ -14,7 +14,7 @@ from app.api.router.chat import chat_router
 
 
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(asctime)s - %(message)s')
 logging.getLogger("nemoguardrails").setLevel(logging.ERROR)
 
 app = FastAPI()
