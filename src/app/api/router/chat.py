@@ -78,3 +78,24 @@ async def handle_chat_completions(request: Request, deployment_id: str, api_vers
     result = await handler.handle_request(request, rails)
 
     return result
+
+@chat_router.post("/{deployment_id}/images/generations")
+async def handle_images_generations(request: Request, deployment_id: str, api_version: str = Query(..., alias="api-version")):
+
+    verification_result = verify_token(request.headers.get("api-key"))
+
+    if verification_result==400:
+
+        logging.exception("An error occurred")
+        return JSONResponse(content={"error": "很抱歉，您沒有輸入api-key，因此出現此錯誤訊息"}, status_code=504)
+        
+    elif verification_result==401:
+
+        logging.exception("An error occurred")
+        return JSONResponse(content={"error": "很抱歉，您的api-key有誤，因此出現此錯誤訊息"}, status_code=504)
+    
+
+    handler = RequestHandlerFactory.get_handler("images_generations", deployment_id, api_version)
+    result = await handler.handle_request(request, rails)
+
+    return result

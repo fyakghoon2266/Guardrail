@@ -2,6 +2,8 @@ from typing import Any
 from .completions_handler import CompletionsRequestHandler
 from .embeddings_handler import EmbeddingsRequestHandler
 from .chat_completions_handler import ChatCompletionsRequestHandler
+from .images_generations_handler import ImagesRequestHandler
+
 
 class RequestHandlerFactory:
     @staticmethod
@@ -12,5 +14,7 @@ class RequestHandlerFactory:
             return EmbeddingsRequestHandler(model_info, api_version)
         elif request_type == "chat_completions":
             return ChatCompletionsRequestHandler(model_info, api_version)
+        elif request_type == "images_generations":
+            return ImagesRequestHandler(model_info, api_version)
         else:
             raise ValueError("Invalid request type")
